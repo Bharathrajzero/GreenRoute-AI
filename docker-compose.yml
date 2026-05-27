@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: greenroute_redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_ARGS=--save 60 1
+    volumes:
+      - redis_data:/data
+
+  proxy:
+    build: .
+    container_name: greenroute_proxy
+    ports:
+      - "8080:8000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-mock_key}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://docker.internal}
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+
+volumes:
+  redis_data:

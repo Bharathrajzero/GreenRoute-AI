@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenRoute AI - Enterprise Gateway Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vantablack: '#030712',
+                        obsidian: '#090d16'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .text-neon-emerald { text-shadow: 0 0 12px rgba(52, 211, 153, 0.15); }
+        .dark .text-neon-emerald { text-shadow: 0 0 12px rgba(52, 211, 153, 0.4); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        .dark ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-vantablack text-slate-900 dark:text-slate-200 min-h-screen font-sans flex flex-col antialiased transition-colors duration-200 selection:bg-emerald-500/30 selection:text-emerald-700 dark:selection:text-emerald-300">
+
+    <header class="border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-obsidian/80 backdrop-blur sticky top-0 z-50 px-8 py-3.5 flex justify-between items-center shadow-sm dark:shadow-md dark:shadow-black/40">
+        <div class="flex items-center space-x-4">
+            <div class="bg-gradient-to-br from-emerald-500/20 to-teal-500/5 text-emerald-700 dark:text-emerald-400 p-2.5 rounded-xl border border-emerald-500/30 shadow-inner">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">GreenRoute <span class="text-emerald-600 dark:text-emerald-400">AI</span></h1>
+                    <span class="text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-400 px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700 font-bold">v1.0.0-Stable</span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-400 font-mono font-medium">Intelligent Carbon-Aware Multi-LLM Orchestrator</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+            <button onclick="toggleSystemTheme()" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition shadow-sm">
+                <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+            </button>
+
+            <div id="connection-badge" class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3.5 py-1.5 rounded-lg">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600 dark:bg-emerald-500"></span>
+                </span>
+                <span class="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">PROXY_ACTIVE : 8080</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-[1600px] w-full mx-auto p-6 grid grid-cols-1 xl:grid-cols-4 gap-6">
+        
+        <div class="xl:col-span-1 space-y-6">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 flex items-center gap-2 font-mono">
+                    <i data-lucide="activity" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i> Telemetry Matrix
+                </h2>
+                <span class="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-500 animate-pulse">Live Polling</span>
+            </div>
+            
+            <div class="bg-gradient-to-b from-white to-slate-50 dark:from-obsidian dark:to-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 relative overflow-hidden shadow-sm dark:shadow-xl">
+                <div class="absolute top-0 right-0 p-4 opacity-5 text-emerald-600 dark:text-emerald-400">
+                    <i data-lucide="leaf" class="w-20 h-20"></i>
+                </div>
+                <p class="text-[11px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-bold mb-1">Cumulative CO₂ Mitigated</p>
+                <div class="flex items-baseline gap-2">
+                    <p id="stat-carbon-saved" class="text-3xl font-black text-slate-900 dark:text-white tracking-tight font-mono text-neon-emerald">0.0000</p>
+                    <span class="text-sm font-mono font-bold text-slate-600 dark:text-slate-400">g CO₂e</span>
+                </div>
+                <div class="mt-4 flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/50 px-3 py-1.5 rounded border border-slate-200 dark:border-slate-800">
+                    <i data-lucide="git-branch" class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400"></i>
+                    <span>Hardware Offload Optimizations Enabled</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white dark:bg-obsidian border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm dark:shadow-lg">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">Requests</p>
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500"></i>
+                    </div>
+                    <p id="stat-requests" class="text-xl font-bold font-mono text-slate-900 dark:text-white">0</p>
+                </div>
+                <div class="bg-white dark:bg-obsidian border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm dark:shadow-lg">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">Cache Hit Rate</p>
+                        <i data-lucide="database" class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500"></i>
+                    </div>
+                    <p id="stat-cache-rate" class="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400">0%</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-obsidian border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4 shadow-sm dark:shadow-lg">
+                <div>
+                    <h3 class="text-xs font-bold uppercase font-mono tracking-wider text-slate-800 dark:text-slate-400 mb-1">Dynamic Routing Topology</h3>
+                    <p class="text-[11px] font-medium text-slate-600 dark:text-slate-500">Proxy load distribution ratio based on evaluation weights.</p>
+                </div>
+                <div class="space-y-4 pt-1">
+                    <div>
+                        <div class="flex justify-between text-xs font-mono font-bold mb-1.5">
+                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-sm bg-cyan-600 dark:bg-cyan-400 shadow-sm shadow-cyan-400/50"></span>Local SLM</span>
+                            <span id="label-slm-count" class="text-slate-700 dark:text-slate-400">0 reqs</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-900 h-2 rounded border border-slate-200 dark:border-slate-800 overflow-hidden">
+                            <div id="bar-slm" class="bg-gradient-to-r from-cyan-600 to-cyan-400 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs font-mono font-bold mb-1.5">
+                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-sm bg-violet-600 dark:bg-violet-400 shadow-sm shadow-violet-400/50"></span>Cloud LLM</span>
+                            <span id="label-llm-count" class="text-slate-700 dark:text-slate-400">0 reqs</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-900 h-2 rounded border border-slate-200 dark:border-slate-800 overflow-hidden">
+                            <div id="bar-llm" class="bg-gradient-to-r from-violet-600 to-violet-400 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="xl:col-span-3 space-y-6 flex flex-col justify-between">
+            <div class="space-y-6">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 flex items-center gap-2 font-mono">
+                    <i data-lucide="terminal" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i> Execution Environment
+                </h2>
+
+                <div class="bg-white dark:bg-obsidian border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4 shadow-sm dark:shadow-xl">
+                    <div class="flex justify-between items-center">
+                        <label for="prompt" class="block text-xs font-bold uppercase font-mono tracking-wider text-slate-700 dark:text-slate-400">Payload Request Packet</label>
+                        <span class="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-500">MIME: application/json</span>
+                    </div>
+                    <textarea id="prompt" rows="4" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 font-mono text-sm transition resize-none shadow-inner" placeholder="Enter standard queries or hardware intensive system design instruction blocks..."></textarea>
+
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-900">
+                        <div class="text-xs font-medium text-slate-600 dark:text-slate-400 max-w-xl flex items-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0"></i>
+                            <span>The execution plane passes the prompt through an HNSW vector database layer before selecting execution hardware loops.</span>
+                        </div>
+                        <button id="submit-btn" onclick="sendPrompt()" class="bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white active:scale-[0.99] text-white dark:text-slate-950 font-mono font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition duration-150 shadow-md">
+                            <span>RUN_REQUEST</span>
+                            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="result-box" class="hidden bg-white dark:bg-obsidian border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md dark:shadow-2xl transition-all duration-300">
+                    <div class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-5 py-3 flex flex-wrap gap-5 text-xs font-mono font-bold">
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 dark:text-slate-500">TARGET_ROUTE:</span>
+                            <span id="res-route" class="px-2 py-0.5 rounded text-[11px] font-bold"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 dark:text-slate-500">COMPLEXITY:</span>
+                            <span id="res-tier" class="text-slate-900 dark:text-slate-200"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-500 dark:text-slate-500">CARBON_EMITTED:</span>
+                            <span id="res-carbon" class="text-amber-700 dark:text-amber-400"></span>
+                        </div>
+                        <div class="flex items-center gap-2 sm:ml-auto">
+                            <span class="text-slate-500 dark:text-slate-500">LATENCY:</span>
+                            <span id="res-latency" class="text-slate-900 dark:text-slate-300"></span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-bold uppercase font-mono tracking-wider text-slate-700 dark:text-slate-400">Response Buffer Stream</label>
+                            <button onclick="navigator.clipboard.writeText(document.getElementById('res-text').innerText)" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300 flex items-center gap-1 text-xs font-mono font-bold transition">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Payload
+                            </button>
+                        </div>
+                        <div id="res-text" class="text-slate-900 dark:text-slate-300 leading-relaxed font-mono text-sm whitespace-pre-wrap bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 shadow-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-obsidian text-slate-600 dark:text-slate-500 text-xs font-mono px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-inner dark:shadow-2xl">
+        <div class="flex items-center space-x-6 font-medium">
+            <span class="flex items-center gap-2 text-slate-800 dark:text-slate-400 font-bold">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+                Node Cluster: local-docker-env
+            </span>
+            <span class="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
+            <span class="flex items-center gap-1.5">
+                <i data-lucide="shield" class="w-3.5 h-3.5 text-slate-500"></i> TLS_DISABLED (Sandbox Mode)
+            </span>
+            <span class="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
+            <span class="flex items-center gap-1.5 text-slate-800 dark:text-slate-400 font-bold">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500 animate-spin" style="animation-duration: 8s;"></i> Sync Rate: 5s
+            </span>
+        </div>
+        
+        <div class="flex items-center space-x-4 text-[11px] text-slate-600 dark:text-slate-500 font-medium">
+            <span>System Epoch: <span class="text-slate-900 dark:text-slate-400 font-bold">2026.05</span></span>
+            <span class="text-slate-300 dark:text-slate-700">•</span>
+            <span>Engine Core Architecture © GreenRoute Automation</span>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        function toggleSystemTheme() {
+            const htmlElement = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeIcon.setAttribute('data-lucide', 'sun');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+        }
+
+        if (localStorage.getItem('theme') === 'light' || (!('theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+        }
+
+        async function updateTelemetryDashboard() {
+            const badge = document.getElementById('connection-badge');
+            try {
+                const res = await fetch(`${API_BASE}/api/stats`);
+                if (!res.ok) throw new Error("Port connection handshake rejected");
+                const data = await res.json();
+                
+                document.getElementById('stat-carbon-saved').innerText = data.total_carbon_saved_g.toFixed(4);
+                document.getElementById('stat-requests').innerText = data.total_requests;
+                
+                const cacheRate = data.total_requests > 0 ? Math.round((data.cache_hits / data.total_requests) * 100) : 0;
+                document.getElementById('stat-cache-rate').innerText = `${cacheRate}%`;
+
+                const totalRoutes = data.local_slm_routes + data.cloud_llm_routes;
+                const slmPct = totalRoutes > 0 ? (data.local_slm_routes / totalRoutes) * 100 : 0;
+                const llmPct = totalRoutes > 0 ? (data.cloud_llm_routes / totalRoutes) * 100 : 0;
+
+                document.getElementById('label-slm-count').innerText = `${data.local_slm_routes} reqs`;
+                document.getElementById('label-llm-count').innerText = `${data.cloud_llm_routes} reqs`;
+                document.getElementById('bar-slm').style.width = `${slmPct}%`;
+                document.getElementById('bar-llm').style.width = `${llmPct}%`;
+
+                badge.className = "flex items-center space-x-2 bg-slate-100 dark:bg-slate-950 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold";
+            } catch (err) {
+                console.error("Telemetry link lost contact:", err);
+                badge.className = "flex items-center space-x-2 bg-red-100 dark:bg-red-950/20 border border-red-500/30 text-red-700 dark:text-red-400 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold";
+            }
+        }
+
+        async function sendPrompt() {
+            const promptInput = document.getElementById('prompt');
+            const submitBtn = document.getElementById('submit-btn');
+            const resultBox = document.getElementById('result-box');
+            
+            if(!promptInput.value.trim()) return alert("Prompt input packet buffer content validation length cannot be 0.");
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span class="animate-spin border-2 border-slate-500 dark:border-slate-950 border-t-transparent rounded-full w-3.5 h-3.5"></span> <span class="text-xs font-bold">EXECUTING...</span>`;
+            
+            try {
+                const response = await fetch(`${API_BASE}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: promptInput.value })
+                });
+                
+                const data = await response.json();
+                
+                resultBox.classList.remove('hidden');
+                document.getElementById('res-text').innerText = data.response;
+                document.getElementById('res-tier').innerText = data.complexity_tier;
+                document.getElementById('res-latency').innerText = `${data.latency_ms} ms`;
+                document.getElementById('res-carbon').innerText = `${data.carbon_emitted_g.toFixed(5)} g`;
+                
+                const badge = document.getElementById('res-route');
+                badge.innerText = data.route.toUpperCase();
+                badge.className = "px-2 py-0.5 rounded text-[11px] font-bold tracking-wider ";
+                
+                if(data.route === 'Cache-Hit') badge.classList.add('bg-emerald-500/10', 'text-emerald-700', 'dark:text-emerald-400', 'border', 'border-emerald-500/20');
+                else if(data.route === 'Local-SLM') badge.classList.add('bg-cyan-500/10', 'text-cyan-700', 'dark:text-cyan-400', 'border', 'border-cyan-500/20');
+                else badge.classList.add('bg-violet-500/10', 'text-violet-700', 'dark:text-violet-400', 'border', 'border-violet-500/20');
+
+                await updateTelemetryDashboard();
+            } catch(e) {
+                alert("Runtime Connectivity Interruption: Confirm the FastAPI proxy node service container environment is successfully running on port 8080.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>RUN_REQUEST</span> <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>`;
+                lucide.createIcons();
+            }
+        }
+
+        lucide.createIcons();
+        updateTelemetryDashboard();
+        setInterval(updateTelemetryDashboard, 5000);
+    </script>
+</body>
+</html>
