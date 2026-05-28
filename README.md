@@ -141,6 +141,9 @@ git commit -m "feat: enhance light theme text color contrast configurations"
 git push origin main
 
 ```
+## 👨‍💻 Author
+Bharath Raj
+GitHub: https://github.com/Bharathrajzero
 
 ---
 
